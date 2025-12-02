@@ -697,6 +697,8 @@
             right: 0;
             bottom: 0;
             transition: background 1s ease;
+            /* Default fallback - will be overridden by state classes */
+            background: linear-gradient(to bottom, #38bdf8, #bfdbfe);
         }
 
         .scenic-time-widget::before {
@@ -718,7 +720,7 @@
         }
 
         .scenic-time-widget.state-day .scenic-time-background {
-            background: linear-gradient(to bottom, #38bdf8, #bfdbfe);
+            background: linear-gradient(to bottom, #38bdf8, #bfdbfe) !important;
             transition: background 1s ease;
         }
 
@@ -734,6 +736,7 @@
             box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
             animation: pulse-slow 4s ease-in-out infinite;
             transform-origin: center;
+            z-index: 10;
         }
 
         .scenic-time-widget.state-day .scenic-cloud {
@@ -742,6 +745,7 @@
             background: rgba(255, 255, 255, 0.9);
             border-radius: 50px;
             filter: blur(0.5px);
+            z-index: 5;
         }
 
         .scenic-time-widget.state-day .scenic-cloud::before {
@@ -868,7 +872,7 @@
         }
 
         .scenic-time-widget.state-night .scenic-time-background {
-            background: linear-gradient(to bottom, #0f172a, #1e1b4b);
+            background: linear-gradient(to bottom, #0f172a, #1e1b4b) !important;
             transition: background 1s ease;
         }
 
@@ -884,6 +888,7 @@
             background: #f3f4f6;
             border-radius: 50%;
             box-shadow: inset -5px 0 0 #e5e7eb;
+            z-index: 10;
         }
 
         .scenic-time-widget.state-night .scenic-star {
@@ -895,6 +900,7 @@
             height: 2px;
             animation: star-twinkle 3s ease-in-out infinite;
             transform-origin: center;
+            z-index: 10;
         }
 
         .scenic-time-widget.state-night .scenic-star.star-1 {
@@ -947,7 +953,7 @@
 
         .scenic-time-content {
             position: relative;
-            z-index: 10;
+            z-index: 20;
             padding: 12px 4px 12px 4px;
             text-align: center;
             display: flex;
@@ -975,7 +981,7 @@
             color: white;
             font-family: 'Inter', sans-serif;
             display: block;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             line-height: 1.1;
             letter-spacing: -0.5px;
         }
@@ -3351,23 +3357,36 @@
 
             const scenicWidget = document.getElementById('scenicTimeWidget');
             if (scenicWidget) {
-                const tunisHour = new Date(time.toLocaleString('en-US', { timeZone: 'Africa/Tunis' })).getHours();
+                // Get current hour in Tunis timezone
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Africa/Tunis',
+                    hour: 'numeric',
+                    hour12: false
+                });
+                const tunisHourParts = formatter.formatToParts(now);
+                const tunisHour = parseInt(tunisHourParts.find(part => part.type === 'hour')?.value || '0');
                 
                 scenicWidget.classList.remove('state-day', 'state-sunset', 'state-night');
-r
-                if (tunisHour >= 6 && tunisHour < 17) {
+                
+                // Force Day theme (6-17), Night theme (>=18 or <6)
+                if (tunisHour >= 6 && tunisHour < 18) {
                     scenicWidget.classList.add('state-day');
-                } else if (tunisHour >= 17 && tunisHour < 20) {
-                    scenicWidget.classList.add('state-sunset');
                 } else {
-
                     scenicWidget.classList.add('state-night');
                 }
             }
 
             const statusRing = document.querySelector('.status-ring');
             if (statusRing) {
-                const tunisHour = new Date(time.toLocaleString('en-US', { timeZone: 'Africa/Tunis' })).getHours();
+                const nowStatus = new Date();
+                const formatterStatus = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Africa/Tunis',
+                    hour: 'numeric',
+                    hour12: false
+                });
+                const tunisHourPartsStatus = formatterStatus.formatToParts(nowStatus);
+                const tunisHour = parseInt(tunisHourPartsStatus.find(part => part.type === 'hour')?.value || '0');
                 
                 if (tunisHour >= 22 || tunisHour < 6) {
                     statusRing.classList.add('sleep-mode');
