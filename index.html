@@ -3318,11 +3318,9 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script>
-        // Theme Toggle Functionality
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
         
-        // Check for saved theme preference or default to light
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme !== 'dark') {
             body.classList.add('light-theme');
@@ -3333,8 +3331,6 @@
             const isLight = body.classList.contains('light-theme');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
         });
-
-        // Live Clock - Tunis Time
         function updateTime() {
             const time = new Date();
             const tunisTime = time.toLocaleTimeString('en-US', {
@@ -3344,43 +3340,35 @@
                 hour12: true
             });
 
-            // Update scenic clock (vertical format)
             const scenicHours = document.getElementById('scenicHours');
             const scenicMinutes = document.getElementById('scenicMinutes');
             if (scenicHours && scenicMinutes) {
-                const timeOnly = tunisTime.split(' ')[0]; // Get just the time without AM/PM
+                const timeOnly = tunisTime.split(' ')[0];
                 const [hours, minutes] = timeOnly.split(':');
                 scenicHours.textContent = hours;
                 scenicMinutes.textContent = minutes;
             }
 
-            // Determine time state and update scenic widget
             const scenicWidget = document.getElementById('scenicTimeWidget');
             if (scenicWidget) {
                 const tunisHour = new Date(time.toLocaleString('en-US', { timeZone: 'Africa/Tunis' })).getHours();
                 
-                // Remove all state classes
                 scenicWidget.classList.remove('state-day', 'state-sunset', 'state-night');
-                
-                // Apply appropriate state based on hour
+r
                 if (tunisHour >= 6 && tunisHour < 17) {
-                    // Day: 6am-5pm
                     scenicWidget.classList.add('state-day');
                 } else if (tunisHour >= 17 && tunisHour < 20) {
-                    // Sunset: 5pm-8pm
                     scenicWidget.classList.add('state-sunset');
                 } else {
-                    // Night: 8pm-6am
+
                     scenicWidget.classList.add('state-night');
                 }
             }
 
-            // Sleep Mode Logic - Update Status Indicator
             const statusRing = document.querySelector('.status-ring');
             if (statusRing) {
                 const tunisHour = new Date(time.toLocaleString('en-US', { timeZone: 'Africa/Tunis' })).getHours();
                 
-                // Sleep mode: 10 PM (22:00) to 6 AM (06:00)
                 if (tunisHour >= 22 || tunisHour < 6) {
                     statusRing.classList.add('sleep-mode');
                     statusRing.setAttribute('title', 'Currently Offline (Sleep Mode)');
@@ -3391,7 +3379,7 @@
             }
         }
 
-        // Update immediately and then every second
+
         updateTime();
         setInterval(updateTime, 1000);
 
